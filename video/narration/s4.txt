@@ -1,0 +1,1 @@
+Now the important part. Delete the P T A meeting from the calendar. That is consequential, so HomeOps stops, and asks. A human approval gate. Approve, and it executes. Deny, and nothing changes. Every action, approved, denied, or automatic, lands in an immutable, hash-chained audit log. Ask what did you do today, and it shows its work.

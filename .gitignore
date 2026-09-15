@@ -1,0 +1,18 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# HomeOps runtime state (regenerated from sample_data/)
+data/
+
+# Video build artifacts (final MP4 lives in assets/)
+video/renders/
+video/node_modules/
+.hyperframes/
+
+# OS / editor
+.DS_Store

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HomeOps for Alexa+ — simulated experience</title>
+<style>
+  :root{
+    --navy:#0b1526; --navy2:#111f36; --card:#16263f; --line:#27405f;
+    --alexa:#25d0ff; --alexa-dim:#0e7fae; --text:#eaf3fb; --muted:#93a9c4;
+    --green:#3ddc84; --amber:#ffb020; --red:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+    background:radial-gradient(1200px 800px at 20% -10%, #16305a 0%, var(--navy) 55%) fixed;
+    color:var(--text);min-height:100vh}
+  header{padding:18px 28px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}
+  .ring{width:44px;height:44px;border-radius:50%;
+    background:conic-gradient(from 0deg,var(--alexa),#7a5cff,var(--alexa));
+    display:flex;align-items:center;justify-content:center;position:relative}
+  .ring::after{content:"";width:32px;height:32px;border-radius:50%;background:var(--navy2)}
+  .ring.listening{animation:spin 1.2s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  header h1{font-size:18px;margin:0;font-weight:650}
+  header p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+  .badge{margin-left:auto;font-size:11px;color:var(--alexa);border:1px solid var(--alexa-dim);
+    padding:4px 10px;border-radius:999px;letter-spacing:.06em;text-align:center}
+  main{max-width:1280px;margin:0 auto;padding:18px 28px}
+  .disclaimer{background:#241a08;border:1px solid var(--amber);border-radius:12px;
+    padding:12px 16px;font-size:13px;color:#ffd98a;margin:0 0 18px;line-height:1.5}
+  .disclaimer b{color:var(--amber)}
+  .demo-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px}
+  @media(max-width:900px){.demo-grid{grid-template-columns:1fr}}
+  .panel{background:rgba(22,38,63,.75);border:1px solid var(--line);border-radius:16px;
+    backdrop-filter:blur(6px)}
+  #chat{padding:18px;height:56vh;min-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+  .msg{max-width:82%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.45}
+  .msg.user{align-self:flex-end;background:#1f6feb;color:#fff;border-bottom-right-radius:4px}
+  .msg.alexa{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .msg.sys{align-self:center;font-size:12px;color:var(--muted)}
+  .tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .toolchip{font-size:11px;font-family:ui-monospace,Menlo,monospace;background:#0d1a2e;
+    border:1px solid var(--line);color:var(--alexa);border-radius:8px;padding:4px 8px}
+  .toolchip .ms{color:var(--muted)}
+  .approval{margin-top:10px;border:1px solid var(--amber);border-radius:12px;padding:12px;background:#2a2111}
+  .approval h4{margin:0 0 6px;font-size:13px;color:var(--amber)}
+  .approval p{margin:0 0 10px;font-size:12.5px;color:var(--text)}
+  .approval button{border:0;border-radius:8px;padding:8px 16px;font-weight:650;cursor:pointer;margin-right:8px}
+  .btn-ok{background:var(--green);color:#06281a}
+  .btn-no{background:transparent;color:var(--red);border:1px solid var(--red)}
+  .composer{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line)}
+  .composer input{flex:1;background:#0d1a2e;border:1px solid var(--line);border-radius:10px;
+    color:var(--text);padding:12px;font-size:14px}
+  .composer button{background:var(--alexa);border:0;border-radius:10px;padding:0 20px;font-weight:700;cursor:pointer}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 18px 14px}
+  .chips button{background:transparent;border:1px solid var(--alexa-dim);color:var(--alexa);
+    border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer}
+  .side{display:flex;flex-direction:column;gap:18px}
+  .side h3{margin:0;padding:14px 16px 0;font-size:13px;letter-spacing:.05em;color:var(--muted);text-transform:uppercase}
+  .side .body{padding:12px 16px 16px;font-size:12.5px}
+  #traceList{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+  .span{background:#0d1a2e;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+  .span .ok{color:var(--green)} .span .warn{color:var(--amber)} .span .err{color:var(--red)}
+  #auditList{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+  .audit{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted)}
+  .audit b{color:var(--text)}
+  .note{font-size:11px;color:var(--muted);padding:0 16px 14px;line-height:1.5}
+  section.block{margin-top:34px}
+  section.block h2{font-size:17px;margin:0 0 6px;font-weight:650}
+  section.block .sub{font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.5}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{background:rgba(22,38,63,.75);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .card h4{margin:0 0 8px;font-size:14px}
+  .card p,.card li{font-size:13px;color:var(--muted);line-height:1.6}
+  .card ul{margin:6px 0;padding-left:18px}
+  .card code{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--alexa)}
+  .arch{background:#0d1a2e;border:1px solid var(--line);border-radius:14px;padding:18px;
+    font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.7;overflow-x:auto;color:#c9dcf2}
+  .arch .hl{color:var(--alexa)} .arch .dim{color:var(--muted)}
+  table.scopes{width:100%;border-collapse:collapse;font-size:12.5px}
+  table.scopes th,table.scopes td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+  table.scopes th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+  table.scopes td code{font-family:ui-monospace,Menlo,monospace;color:var(--alexa);font-size:12px}
+  .video-wrap{background:rgba(22,38,63,.75);border:1px solid var(--line);border-radius:16px;padding:18px}
+  video{width:100%;border-radius:10px;background:#000;display:block}
+  .backend-note{font-size:12.5px;color:var(--muted);line-height:1.6;background:#0d1a2e;
+    border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:14px}
+  .backend-note b{color:var(--text)}
+  .row-actions{display:flex;gap:10px;margin-top:10px}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--muted);
+    border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer}
+  .ghost:hover{color:var(--text);border-color:var(--alexa-dim)}
+  footer{padding:26px 28px;color:var(--muted);font-size:11.5px;text-align:center;line-height:1.7}
+  kbd{background:#0d1a2e;border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-size:11px}
+</style>
+</head>
+<body>
+<header>
+  <div class="ring" id="ring"></div>
+  <div>
+    <h1>HomeOps for Alexa+</h1>
+    <p>Family household coordinator · Alexa+ Agent Skill + self-hosted MCP server</p>
+  </div>
+  <div class="badge">SIMULATED EXPERIENCE<br><span style="color:var(--muted)">scripted demo model</span></div>
+</header>
+
+<main>
+  <div class="disclaimer">
+    <b>Simulated Alexa+ experience.</b> This page is a scripted simulation of the Alexa+ skill
+    experience (allowed path under the hackathon's Alexa+ track). The assistant turns below run
+    the real HomeOps tool semantics over the repo's sample household data — 16 tools with
+    scope checks, a human approval gate, and a hash-chained audit log. In production the same
+    tools run on a self-hosted MCP server (MCP spec 2025-11-25+, Streamable HTTP) orchestrated
+    by a Strands agent on Amazon Bedrock.
+  </div>
+
+  <!-- ======================= LIVE DEMO ======================= -->
+  <div class="demo-grid">
+    <section class="panel">
+      <div id="chat"></div>
+      <div class="chips" id="chips"></div>
+      <div class="composer">
+        <input id="input" placeholder='Try "Good morning, give me the family briefing"…' autocomplete="off">
+        <button id="send">Send</button>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="panel">
+        <h3>⚙ MCP tool calls <span style="text-transform:none">(live trace)</span></h3>
+        <div class="body"><div id="traceList"><div class="audit">No calls yet — say hello.</div></div></div>
+      </div>
+      <div class="panel">
+        <h3>🔒 Immutable audit log</h3>
+        <div class="body"><div id="auditList"><div class="audit">—</div></div></div>
+        <div class="note">Append-only, SHA-256 hash-chained. Every tool call lands here with its scopes and approval id.</div>
+      </div>
+      <div class="panel">
+        <h3>🎯 Try the approval gate</h3>
+        <div class="note">Ask <kbd>Delete the PTA meeting from the calendar</kbd> — a consequential action. HomeOps must request your approval before it executes. Approve it, or deny it and watch the state stay untouched.</div>
+        <div class="note row-actions">
+          <button class="ghost" id="resetBtn">↺ Reset demo state</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ======================= ARCHITECTURE ======================= -->
+  <section class="block">
+    <h2>🏗 How it works</h2>
+    <p class="sub">Voice or text reaches the skill → the Strands agent plans with Bedrock (Nova) →
+      every step is a real MCP tool call over Streamable HTTP against the self-hosted HomeOps
+      server. This page simulates that loop with the same tool semantics and the same data.</p>
+    <div class="arch"><span class="dim">┌──────────────┐   voice/text    ┌─────────────────────────┐</span>
+<span class="dim">│ </span><span class="hl">Alexa+ Skill</span><span class="dim"> │ ─────────────▶ │ </span><span class="hl">Strands Agent (Bedrock)</span><span class="dim"> │  AWS Builder mini:</span>
+<span class="dim">│  (utterances) │                │  us.amazon.nova-lite    │  Strands SDK + Bedrock</span>
+<span class="dim">└──────────────┘                └────────────┬────────────┘</span>
+<span class="dim">                                             │ Streamable HTTP (MCP 2025-11-25+)</span>
+<span class="dim">                              ┌──────────────▼────────────┐</span>
+<span class="dim">                              │   </span><span class="hl">HomeOps MCP server</span><span class="dim">      │  16 tools · per-tool</span>
+<span class="dim">                              │   :8765/mcp               │  scopes · approvals</span>
+<span class="dim">                              └──────────────┬────────────┘</span>
+<span class="dim">                          ┌──────────────────┼──────────────────┐</span>
+<span class="dim">                          ▼                  ▼                  ▼</span>
+<span class="dim">                    household JSON   hash-chained audit   approval queue</span></div>
+    <div class="backend-note">
+      <b>How this deployed demo is wired (honest version).</b> A persistent MCP server can't run
+      on plain static hosting, so this site's <code style="color:var(--alexa)">/api/*</code> endpoints
+      are lightweight serverless functions (<code style="color:var(--alexa)">web/api/</code>) that
+      re-implement the <i>offline demo path</i>: the same deterministic intent router and the same
+      16-tool semantics as <code style="color:var(--alexa)">src/homeops/</code>, operating on the real
+      bundled seed data (<code style="color:var(--alexa)">web/data/household.json</code>, copied from
+      the repo's <code style="color:var(--alexa)">sample_data/household.json</code>). State is
+      per-instance and resets on cold start — use “Reset demo state” to reseed. The full-fidelity
+      backend (Python MCP server + Strands agent, Streamable HTTP, persistent hash-chained audit)
+      runs locally: <code style="color:var(--alexa)">python -m homeops.server</code> +
+      <code style="color:var(--alexa)">python web/bridge.py</code>. See the repo README.
+    </div>
+  </section>
+
+  <!-- ======================= TRUST & GOVERNANCE ======================= -->
+  <section class="block">
+    <h2>🛡 Trust &amp; governance</h2>
+    <p class="sub">The differentiator: least-privilege scopes, a human-in-the-loop gate for
+      consequential actions, and an immutable audit trail — all first-class primitives, live in
+      the demo above.</p>
+    <div class="cols">
+      <div class="card">
+        <h4>🔑 Scoped permissions</h4>
+        <p>Every tool declares the scopes it needs. Calls without them are denied explicitly —
+          never silently. The demo grants the full set; set <code>HOMEOPS_SCOPES</code> to
+          narrow it (e.g. <code>calendar:read</code>) and watch writes get denied.</p>
+      </div>
+      <div class="card">
+        <h4>✋ Human approval gate</h4>
+        <p>Consequential actions return <code>approval_required</code> instead of executing.
+          The action only runs via <code>approvals_decide</code> after a human approves —
+          denials leave state untouched. Try it: delete the PTA meeting, then deny.</p>
+      </div>
+      <div class="card">
+        <h4>⛓ Hash-chained audit log</h4>
+        <p>Every call is appended with <code>prev_hash → entry_hash</code> (SHA-256), so
+          tampering is evident. <code>audit_get_log</code> replays and verifies the chain on
+          every read — the panel above shows it live.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h4>Tool → required scope</h4>
+      <table class="scopes">
+        <tr><th>Tool</th><th>Scopes</th></tr>
+        <tr><td><code>calendar_list_events</code></td><td><code>calendar:read</code></td></tr>
+        <tr><td><code>calendar_add_event</code>, <code>calendar_delete_event</code></td><td><code>calendar:write</code> (delete is approval-gated)</td></tr>
+        <tr><td><code>chores_list</code> / <code>chores_assign</code> / <code>chores_complete</code></td><td><code>chores:read</code> / <code>chores:write</code></td></tr>
+        <tr><td><code>grocery_list</code> / <code>grocery_add_item</code> / <code>grocery_remove_item</code></td><td><code>grocery:read</code> / <code>grocery:write</code></td></tr>
+        <tr><td><code>school_get_schedule</code>, <code>school_get_bus</code></td><td><code>school:read</code></td></tr>
+        <tr><td><code>household_briefing</code></td><td><code>briefing:read</code></td></tr>
+        <tr><td><code>approvals_list_pending</code> / <code>approvals_decide</code></td><td><code>approvals:read</code> / <code>approvals:write</code></td></tr>
+        <tr><td><code>audit_get_log</code></td><td><code>audit:read</code></td></tr>
+        <tr><td><code>permissions_get_scopes</code></td><td><i>none</i></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ======================= DEMO VIDEO ======================= -->
+  <section class="block">
+    <h2>🎬 Demo video</h2>
+    <p class="sub">End-to-end walkthrough: the problem → a live simulated Alexa+ session (briefing,
+      grocery add, bus times, <b>approval-gated calendar delete</b>) → the AWS/Strands layer →
+      system architecture. (A YouTube-hosted version will be linked here after upload.)</p>
+    <div class="video-wrap">
+      <video controls preload="metadata" src="./homeops-demo.mp4">
+        Sorry, your browser doesn't support embedded video.
+        <a href="./homeops-demo.mp4" style="color:var(--alexa)">Download the demo MP4</a>.
+      </video>
+    </div>
+  </section>
+</main>
+
+<footer>
+  HomeOps for Alexa+ · simulated experience · demo build for the Amazon Build/Ship/Shape hackathon<br>
+  Alexa+ track · Strands SDK + Amazon Bedrock in production · MCP spec 2025-11-25+ over Streamable HTTP<br>
+  <span style="color:var(--alexa)">Backend:</span> serverless demo API (this site) ·
+  <span style="color:var(--alexa)">Full backend:</span> self-hosted MCP server + Strands agent (repo README)
+</footer>
+
+<script>
+const chat = document.getElementById('chat');
+const input = document.getElementById('input');
+const ring = document.getElementById('ring');
+
+const PROMPTS = [
+  "Good morning, give me the family briefing",
+  "Add oat milk to the grocery list",
+  "When is Mateo's bus pickup?",
+  "Assign the laundry to Sofia",
+  "Delete the PTA meeting from the calendar",
+  "Show me the audit log",
+];
+const chips = document.getElementById('chips');
+PROMPTS.forEach(p => {
+  const b = document.createElement('button');
+  b.textContent = p;
+  b.onclick = () => { input.value = p; send(); };
+  chips.appendChild(b);
+});
+
+function addMsg(cls, html) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.innerHTML = html;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+  return d;
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+
+function renderTrace(trace){
+  const el = document.getElementById('traceList');
+  el.innerHTML = '';
+  trace.forEach(t => {
+    const st = t.result_status || 'ok';
+    const cls = st === 'ok' ? 'ok' : (st === 'approval_required' ? 'warn' : 'err');
+    const d = document.createElement('div');
+    d.className = 'span';
+    const args = Object.entries(t.args||{}).map(([k,v])=>`${k}=${JSON.stringify(v)}`).join(' ');
+    d.innerHTML = `<span class="${cls}">●</span> ${esc(t.tool)} <span style="color:var(--muted)">${esc(args)}</span> <span class="${cls}">${esc(st)}</span> <span style="color:var(--muted)">${t.duration_ms}ms</span>`;
+    el.appendChild(d);
+  });
+}
+
+async function refreshAudit(){
+  try{
+    const r = await fetch('/api/audit');
+    const data = await r.json();
+    const el = document.getElementById('auditList');
+    el.innerHTML = '';
+    (data.entries||[]).slice(-12).reverse().forEach(e => {
+      const d = document.createElement('div');
+      d.className = 'audit';
+      const time = new Date(e.ts*1000).toLocaleTimeString();
+      d.innerHTML = `<b>#${e.seq}</b> ${time} · ${esc(e.tool)} · <span style="color:var(--green)">${esc(e.result_summary)}</span>${e.approval_id?` · ${esc(e.approval_id)}`:''}`;
+      el.appendChild(d);
+    });
+  }catch(e){/* offline */}
+}
+
+async function send(){
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  addMsg('user', esc(text));
+  ring.classList.add('listening');
+  const thinking = addMsg('alexa', '…');
+  try{
+    const r = await fetch('/api/chat', {method:'POST',
+      headers:{'Content-Type':'application/json'}, body: JSON.stringify({text})});
+    const data = await r.json();
+    thinking.remove();
+    const wrap = addMsg('alexa', esc(data.reply));
+    if(data.trace && data.trace.length){
+      const tc = document.createElement('div');
+      tc.className = 'tools';
+      data.trace.forEach(t => {
+        const c = document.createElement('span');
+        c.className = 'toolchip';
+        c.innerHTML = `${esc(t.tool)} <span class="ms">${t.duration_ms}ms</span>`;
+        tc.appendChild(c);
+      });
+      wrap.appendChild(tc);
+      renderTrace(data.trace);
+    }
+    if(data.approval){
+      const ap = document.createElement('div');
+      ap.className = 'approval';
+      ap.innerHTML = `<h4>⚠ Approval required</h4><p>${esc(data.approval.reason)}</p>`;
+      const ok = document.createElement('button');
+      ok.className = 'btn-ok'; ok.textContent = 'Approve';
+      ok.onclick = () => { input.value = 'Yes, approve it'; send(); };
+      const no = document.createElement('button');
+      no.className = 'btn-no'; no.textContent = 'Deny';
+      no.onclick = () => { input.value = 'No, cancel that'; send(); };
+      ap.appendChild(ok); ap.appendChild(no);
+      wrap.appendChild(ap);
+    }
+    refreshAudit();
+  }catch(e){
+    thinking.textContent = 'Demo backend unreachable — on a local checkout, is web/bridge.py running?';
+  }
+  ring.classList.remove('listening');
+  chat.scrollTop = chat.scrollHeight;
+}
+
+document.getElementById('send').onclick = send;
+input.addEventListener('keydown', e => { if(e.key === 'Enter') send(); });
+document.getElementById('resetBtn').onclick = async () => {
+  await fetch('/api/reset', {method:'POST'});
+  addMsg('sys', 'Demo state reset — household data restored from the seed.');
+  renderTrace([]); refreshAudit();
+};
+addMsg('sys', 'Simulated Alexa+ session started · demo tool backend connected');
+refreshAudit();
+</script>
+</body>
+</html>

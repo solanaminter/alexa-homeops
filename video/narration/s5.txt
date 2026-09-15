@@ -1,0 +1,1 @@
+Under the hood, a Strands S D K agent on Amazon Bedrock, Nova, plans each turn, and calls the HomeOps M C P server, spec twenty twenty-five, eleven twenty-five or newer, over streamable H T T P. Per-tool scopes enforce least privilege. And because trust needs proof, the repo ships scenario evals on tool calling. Briefings, approvals, denials, scope checks. All green.

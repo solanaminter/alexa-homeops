@@ -1,0 +1,1 @@
+HomeOps is a family household coordinator. An Alexa Plus agent skill, backed by a self-hosted M C P server. Sixteen tools for the calendar, chores, groceries, and school, orchestrated by a Strands agent on Amazon Bedrock.
