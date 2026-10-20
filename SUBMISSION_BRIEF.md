@@ -91,13 +91,19 @@
       `ScriptedModel` covers evals/demo. Recommend a live Bedrock smoke test
       before submission if the $150 credits are claimed.
 - [ ] YouTube upload + Devpost submission are the parent's (per campaign rules).
-- [ ] Final MP4 must be rendered (`video/`: `npm run render`) and copied to
-      `assets/homeops-demo.mp4`; check passes, render not yet run.
+- [x] Final MP4 rendered and copied to `assets/homeops-demo.mp4` (verified 2026-10-19: 127s / 2:07, under the 3:00 cap; identical to `video/renders/video_2026-09-14_23-42-55.mp4`).
 - [ ] The Devpost "simulated experience" rules were not published; the UI is
       conservatively labeled "SIMULATED EXPERIENCE".
 
-## (f) AWS credits flag
+## (f) AWS credits flag — CLOSED
 
-⚠️ **$150 AWS promotional credits are requestable via a Google Form, deadline
-Oct 21, 2026** — the parent may request them (NOT done by the builder). Useful
-for a live Bedrock smoke test + hosting the MCP server for judges.
+⚠️ **Update 2026-10-19 (verified on amazonappdev2026.devpost.com/resources):
+"October 7th Update: Unfortunately, we are out of credit codes and are no
+longer accepting credit requests."** The $150 promotional-credits Google Form
+is dead — 12 days before the brief's Oct 21 assumption. The live-Bedrock-smoke-test
+path now depends on (a) a Bedrock quota increase (denied Sep 28; next billing
+cycle has since turned, so re-apply is retryable — needs his AWS creds/console),
+or (b) his standing budget decision on AWS spend. The Alexa+ track itself is
+exempt from the runtime-tech requirement (simulated experience is the explicit
+path), so filing is still viable; the AWS Builder mini-challenge needs a real,
+documented AWS integration of some kind before filing.

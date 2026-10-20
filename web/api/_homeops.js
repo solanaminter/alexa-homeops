@@ -322,7 +322,11 @@ function callTool(name, args) {
     ts: Date.now() / 1000,
     result_status: summary,
   };
-  if (approvalId) span.approval_id = approvalId;
+  // Only a live approval_required result raises a pending-approval card.
+  // approvals_decide / calendar_delete_event echo the approval_id on their
+  // *settled* results (status ok/error/denied) — surfacing those would render
+  // a duplicate "Approval required" card after every approve/deny.
+  if (summary === "approval_required" && approvalId) span.approval_id = approvalId;
   if (result && result.reason) span.reason = result.reason;
   return { result, span };
 }
@@ -505,7 +509,7 @@ function handleChat(text) {
     results.push(result);
   }
   const reply = replyFor(routed.kind, results);
-  const approvalSpan = trace.find((s) => s.approval_id);
+  const approvalSpan = trace.find((s) => s.approval_id && s.result_status === "approval_required");
   const approval = approvalSpan
     ? { approval_id: approvalSpan.approval_id, reason: approvalSpan.reason || "",
         tool: approvalSpan.tool }
