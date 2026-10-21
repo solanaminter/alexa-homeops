@@ -68,8 +68,9 @@
   (briefings, approvals, denials, scope checks — 14 tests green) and a
   simulated Alexa+ web experience with a live tool-call trace.
 - **Tracks:** Alexa+ (primary).
-- **Mini challenges:** AWS Builder; Open Source.
-- **Video URL:** *(parent pastes YouTube link after upload)*
+- **Mini challenges:** Open Source only (AWS Builder dropped — needs a real
+  AWS runtime integration; credits form closed Oct 7).
+- **Video URL:** https://youtu.be/Sq_Ce1QD7GE (uploaded 2026-10-20, Public, 2:08, processed + copyright clean; title trimmed to YouTube's 100-char limit: "HomeOps for Alexa+ — the family coordinator that knows when to ask (Amazon hackathon)")
 - **Live demo URL:** https://homeops-demo.vercel.app
 - **Code repo URL:** *(parent pastes GitHub URL after push)*
 - **Product feedback:** see `PRODUCT_FEEDBACK.md` — paste per-tool sections

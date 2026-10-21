@@ -2,22 +2,22 @@
 
 **Live Demo:** https://homeops-demo.vercel.app
 
-**Demo Video:** https://www.youtube.com/watch?v=Dq_Jcmi0_d4
+**Demo Video:** https://youtu.be/Sq_Ce1QD7GE
 
 **Family household coordinator for Alexa+** — an Alexa+ Agent Skill backed by a
 self-hosted **MCP server** (MCP spec 2025-11-25+, Streamable HTTP), orchestrated
 by a **Strands SDK agent on Amazon Bedrock**.
 
 Built for the [Amazon Build/Ship/Shape Developer Hackathon](https://amazonappdev2026.devpost.com/)
-(Alexa+ track + AWS Builder + Open Source mini challenges).
+(Alexa+ track + Open Source mini challenge).
 
 > "Alexa, give me the family briefing" → the skill calls HomeOps tools for the
 > calendar, chores, grocery list, and school bus times — consequential actions
 > pause for a human approval, and every call lands in a hash-chained audit log.
 
-## Demo (2:30 video)
+## Demo (2:08 video)
 
-📺 *Demo video: `assets/homeops-demo.mp4` (also on YouTube — link added at submission time)*
+📺 *Demo video: `assets/homeops-demo.mp4` (also on YouTube: https://youtu.be/Sq_Ce1QD7GE)*
 
 The video walks through: the problem → a live simulated Alexa+ session
 (briefing, grocery add, bus times, **approval-gated calendar delete**) →
@@ -73,8 +73,8 @@ python -m homeops.evals   # scenario evals against a live server
 
 ```
 ┌──────────────┐   voice/text    ┌─────────────────────────┐
-│  Alexa+ Skill │ ─────────────▶ │ Strands Agent (Bedrock) │  AWS Builder mini:
-│  (utterances) │                │  us.amazon.nova-lite    │  Strands SDK + Bedrock
+│  Alexa+ Skill │ ─────────────▶ │ Strands Agent (Bedrock-  │  Strands SDK agent,
+│  (utterances) │                │  configured)            │  Bedrock-configured
 └──────────────┘                └────────────┬────────────┘
                                              │ Streamable HTTP (MCP 2025-11-25+)
                               ┌──────────────▼────────────┐
